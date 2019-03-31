@@ -1,0 +1,480 @@
+<br> 
+<center><img src="http://i.imgur.com/sSaOozN.png" width="500"></center>
+
+## Course: Computational Thinking for Governance Analytics
+### Prof. José Manuel Magallanes, PhD 
+
+_____
+
+# Session 2: Introduction to Programming in R
+## Part A: Data Structures in R
+
+<a id='beginning'></a>
+
+Programming languages use _data structures_ to tell the computer how to organize the data we are working with. That is, data structures provided by a programming language are not the same in another one. However, in most cases, a name given to a data structure in one programming language should generally be the same in other one. It is worth keeping in mind, that a particular data structure may serve for one purpose, but not for other ones.  
+
+In everyday life, a book can be considered a data structure: we use it to store some kind of information. It has some advantages: it has a table of contents; it has numbers on the pages; you can take it with you; read it as long as you can see the words; and read it again as many times as you want. It has some disadvantages: you can lose it, and need to buy it again; it can deteriorate; get eaten by an insect; and so on. 
+
+We are going to talk about 3 data structures in R:
+
+1. [Lists.](#part1) 
+2. [Vectors.](#part2) 
+3. [Data Frame.](#part3) 
+
+**Lists** and **vectors** are simple structures; a **data frame** is a more complex one (built from the simple ones). 
+
+----
+
+<a id='part1'></a>
+
+## List
+
+Lists are containers of values. The values can be of any kind (numbers or non-numbers), and even other containers (simple or complex). If we have an spreadsheet as a reference, a row is a 'natural' list.
+
+```{r CreatingList, eval=FALSE}
+DetailStudent=list(fullName="Fred Meyers",
+                   age=40,
+                   female=FALSE)
+```
+
+The *object* 'DetailStudent' serves to store _temporarily_ the list in the computer. To name a list, use combinations of letters and numbers (never start with a number) in a meaningful way. Typing the name of the object 'DetailStudent', now a list, will give you all the contents you saved in there:
+```{r ShowingList, eval=FALSE}
+DetailStudent
+```
+Each of the elements in the list, in this case, holds a different type:
+
+* *FullName* holds characters
+* *age* holds a number
+* *female* holds a logical (Boolean) value.
+
+You can access individual elements like this:
+
+```{r AccessingList, eval=FALSE}
+DetailStudent[[1]]
+# or
+DetailStudent[['fullName']]
+# or
+DetailStudent$fullName
+```
+
+You can alter the list using any of the above mechanisms:
+```{r AlteringLists, eval=FALSE}
+DetailStudent$fullName='Alfred Mayer'
+# Then:
+DetailStudent
+```
+
+You can add an element like this:
+```{r addElemList, eval=FALSE}
+DetailStudent$city='Seattle'
+
+# show:
+DetailStudent
+```
+
+And destroy it by **NULL**ing it, like this:
+```{r destroyElementList, eval=FALSE}
+DetailStudent$city=NULL # do you like: DetailStudent[[4]]=NULL
+```
+
+
+[Go to page beginning](#beginning)
+
+----
+
+<a id='part2'></a> 
+
+## Vectors
+Vectors are also containers of values. The values should be of __only one type__ (**R** may alter it silently, otherwise). If we have an spreadsheet as a reference, a column can be a natural vector (when rows and columns HAVE to be a vector we may need a **matrix**<sup><a href="#fn1" id="ref1">1</a></sup>).
+
+```{r CreatingVectors, eval=FALSE}
+names=c("Fred Meyers","Sarah Jones", "Lou Ferrigno","Sky Turner")
+ages=c(40,35, 60,77)
+female=c(F,T,T,T)
+```
+
+Each *object* is holding temporarily a vector. Use combinations of letters and numbers (never start with a number) in a meaningful way to name a vector. When typing the name of the object you will get all the contents:
+```{r ShowingVector, eval=FALSE}
+names
+ages
+female
+```
+
+Each vector is composed of elements with the same type. If you want to access individual elements, you can write:
+
+```{r AccessingVector, eval=FALSE}
+names[1]
+# or
+ages[1]
+# or
+female[1]
+```
+
+You can alter the list using any of the above mechanisms:
+```{r AlteringVector, eval=FALSE}
+names[1]='Alfred Mayer'
+# Then:
+names[1]
+```
+
+You can add an element to a vector like this:
+```{r addElemVec, eval=FALSE}
+elements=c(1,2,3)
+elements=c(elements,40) 
+elements
+```
+
+You can NOT delete it with NULL:
+```{r delElemVec, results='asis', echo=TRUE, eval=FALSE}
+elements[4]=NULL
+```
+
+Just do this:
+```{r delElemVecOK, eval=FALSE}
+elements=elements[-4] # vector shrinks
+```
+
+Another important operation is to get rid of repeated values:
+```{r uniqueVals, eval=FALSE}
+weekdays=c('M','T','W','Th','S','Su','Su')
+weekdays
+```
+
+Then, use the function _unique_:
+```{r uniqueValsOK, eval=FALSE}
+unique(weekdays)
+```
+
+
+Vector elements can have 'names', but their contents still need to be homogeneous:
+```{r TroublesomeVector, eval=FALSE}
+newAges=c("Sam"=50, "Paul"=30, "Name"="Jim")
+newAges
+```
+
+As you saw above, the presence of "Jim" as an element, *coerced* the other values to *characters* (the _numbers_ are now _text_, the symbol **''** is used to show that). Eliminating that value will give an appropriate vector:
+
+```{r CorrectingVector, eval=FALSE}
+newAgesGood=c("Sam"=50, "Paul"=30)
+newAgesGood
+```
+
+### Vectors versus Lists
+
+Let me share some ideas for comparing these two basic structures:
+
+__A) Make sure what you have:__
+
+The functions **is.vector**, **is.list**, **is.character** and **is.numeric** should be used frequently, because we need to be sure of what structure we are dealing with:
+```{r MakingSure_I, eval=FALSE}
+is.vector(newAgesGood)
+is.list(newAges)
+is.list(DetailStudent)
+is.vector(DetailStudent)
+is.numeric(newAges[1])
+is.character(newAges[1])
+is.numeric(newAgesGood[1])
+```
+
+You may be wondering why we got DetailStudent as a vector. It is a list, but the function is.vector has the *argument* **mode** set to "any" by default:
+```{r CheckingFunctionIsVector, eval=FALSE}
+is.vector(DetailStudent,mode = 'any')
+is.vector(DetailStudent,mode = 'vector')
+```
+
+The function **class**, **typeof**, and **str** could be another alternative to find out what we have:
+```{r MakingSure_II, eval=FALSE}
+typeof(newAges)
+class(newAges)
+str(newAges)
+# and
+class(DetailStudent)
+typeof(DetailStudent)
+str(DetailStudent)
+```
+
+__B) Make sure functions are shareable__
+
+The function _length_ is pretty ubiquitous in R. In this case it works well for lists and vectors, precisely telling how many elements there are:
+```{r, eval=FALSE}
+length(DetailStudent)
+length(newAges)
+```
+
+Notice that _length_ gives you the count at the top level (it is not smart to report the count inside of an composite element):
+```{r, eval=FALSE}
+# for lists:
+listToCount=list(name='John', language_spoken=c('Spanish','English'))
+length(listToCount)
+```
+
+
+The function _unique_, shown above to get rid of duplicates, is also used in lists. The good thing is that it also returns a list:
+```{r, eval=FALSE}
+aList=list(1,1,3,4,5)
+unique(aList)
+```
+
+Pay attention if a function works for the same data structures, and if the function returns the same data structure or a different one when applied to a particular one. See the next operations.
+
+When you compare  vectors ('>', '<', etc.), it will work **element by element**:
+
+```{r, eval=FALSE}
+vector1=c('b','c','d')
+vector2=c('a','b','d')
+vector1>vector2
+```
+
+If vectors have different sizes, comparison works if one has ONE element:
+```{r, eval=FALSE}
+vector3=c('a')
+vector1>vector3 # each element of vector1 compared to the only one in vector3
+```
+
+Then, this confuses vectors:
+```{r, eval=FALSE}
+vector4=c('a','b')
+vector1>vector4
+```
+
+
+This is also valid for vectors of numbers:
+
+```{r, eval=FALSE}
+# if we have these vectors:
+numbers1=c(1,2,3)
+numbers2=c(1,2,3)
+numbers3=c(5)
+numbers4=c(1,10)
+```
+Then, these work well:
+```{r, eval=FALSE}
+# adding element by element:
+numbers1+numbers2
+
+# adding 5  to all the elements of other vector:
+numbers1+numbers3
+
+# multiplication (element by element):
+numbers1*numbers2
+
+# and this kind of multiplication:
+numbers1 * numbers3
+```
+
+However, R will get confused here:
+```{r, eval=FALSE}
+numbers1+numbers4 # different size matters!
+```
+
+
+Now, let's see how the previous operations work here. These are our lists:
+```{r, eval=FALSE}
+numbersL1=list(11,22,33)
+numbersL2=list(1,2,3)
+
+```
+
+...the _adding_ can not be interpreted:
+```{r, eval=FALSE}
+numbersL1+numbersL2
+```
+... and neither the comparisons...
+```{r, eval=FALSE}
+numbersL1>numbersL2
+```
+So do not expect neither of these to work:
+```{r, eval=FALSE}
+numbersL1*numbersL2
+numbersL1*3
+```
+
+The last command (_numbersL1_*3) could be tried with the function __rep__, keeping in mind that you will not apply arithmetic to the list, but repeat it:
+
+```{r, eval=FALSE}
+rep(numbersL1,3) # repeat the list '3' times...
+```
+
+
+
+[Go to page beginning](#beginning)
+
+----
+
+<a id='part3'></a>
+
+
+## Data Frames
+
+Data frames are containers of values. You use a data frame because you need to combine what vectors and lists do. The most common analogy is a data table like  the ones in a __spreadsheet__: 
+
+```{r CreatingDF, eval=FALSE}
+# VECTORS
+names=c("Qing", "Françoise", "Raúl", "Bjork")
+ages=c(32,33,28,30)
+country=c("China", "Senegal", "Spain", "Norway")
+education=c("Bach", "Bach", "Master", "PhD")
+
+#DF as a "List" of vectors:
+students=data.frame(ages,country,education,row.names=names)
+students
+```
+
+You see your data frame above. Just by watching, you can not be sure of what you have, so using **str** is highly recommended:
+```{r strDF, eval=FALSE}
+str(students)
+```
+
+This data frame uses the vector 'names' as the __row names__, so that vector is not considered a column, that is fine:
+```{r rowsDF, eval=FALSE}
+students[1,] #first row
+students['Qing',] # row with 'Qing' as row name
+# this is wrong: students['Qing']
+```
+
+But the problem you should have detected is that country and education are considered of type *factor*, that is, R is coercing them as a **categorical variable**. If you do not want that, because these are proper names, you should create your data frame requesting that explicitly:
+```{r reCreateDFStrings, eval=FALSE}
+students=data.frame(names,ages,country,education,
+                    stringsAsFactors=F)
+str(students)
+```
+
+Notice that in this new version, I am considering *names* as a column and not as the row names; then, R will use numbers in each row by default:
+```{r showDF, eval=FALSE}
+students
+```
+
+The function _str_ showed you the dimensions of the structure (number of rows and columns); R has alternative ways to get the dimensions:
+```{r, eval=FALSE}
+# rows and columns
+dim(students)
+
+#also
+nrow(students)  # we have ncol() too!
+
+# and very important:
+length(students)
+```
+
+We know _length_ works for vectors and lists. In data frames, it gives you number of columns, NOT rows. Data frames have the functions __head()__, which is very useful to show the top rows of the dataframe:
+```{r, eval=FALSE}
+head(students,2) # top 2
+```
+Of course, we have __tail__:
+```{r, eval=FALSE}
+tail(students,2) # last 2
+```
+
+
+
+You can access data frames elements in an easy way:
+```{r accessDF, eval=FALSE}
+# one particular column
+students$names
+# two columns using positions
+students[,c(1,4)]
+## two columns using names of columns
+students[,c('names','education')]
+```
+
+Using positions is the best way to get several columns:
+```{r getColsDF, eval=FALSE}
+students[,c(1:3)] # ':' is used to facilitate 'from-to' sequence
+```
+
+Of course, you can create a new object with **subsets**:
+```{r subsetDF, eval=FALSE}
+studentsNoEd=students[,c(1:3)]
+studentsNoEd
+```
+
+You can modify any values in a data frame. Let me create a copy of this data frame to play with:
+```{r copyDF, eval=FALSE}
+studentsCopy=students # I make a copy to avoid altering my original dataframe
+```
+
+Now, I can change the age of Qing to 23 replacing 32:
+```{r modifyDF, eval=FALSE}
+studentsCopy[1,2]=23
+# change is immediate! (you will not get any warning)
+studentsCopy[1,]
+```
+
+We can reset a column as **missing**:
+```{r missingColDF, eval=FALSE}
+studentsCopy$country=NA
+```
+
+And, delete a column by **null**ing it:
+```{r deleteColDF, eval=FALSE}
+studentsCopy$ages=NULL
+```
+
+Then, our copy looks like this:
+```{r copyDfShow, eval=FALSE}
+studentsCopy
+```
+
+
+### Querying Data Frames:
+
+Once you have a data frame you can start writing interesting queries (notice the use of _commas_):
+
+**Who is the oldest in the group?**
+```{r query1, eval=FALSE}
+students[which.max(students$ages),] 
+```
+
+**Who is the youngest in the group?**
+```{r query2, eval=FALSE}
+students[which.min(students$ages),] 
+```
+
+**Who is above 30 and from China?**
+```{r query3, eval=FALSE}
+students[students$ages>30 & students$country=='China',] 
+```
+
+
+**Who is not from Norway?**
+```{r query4, eval=FALSE}
+students[students$country!="Norway",] 
+```
+
+**Who is from one of these?**
+```{r query5, eval=FALSE}
+DangeourousPlaces=c("Peru", "USA", "Spain")
+students[students$country %in% DangeourousPlaces,] 
+students[!students$country %in% DangeourousPlaces,] # the opposite
+```
+
+
+**The education level of the one above 30 and from China?**
+```{r query6, eval=FALSE}
+students[students$ages>30 & students$country=='China',]$education 
+```
+
+**Show me the data ordered by age (decreasing)?**
+```{r query7, eval=FALSE}
+students[order(-students$ages),]
+```
+
+
+_____
+### Footnotes
+<sup id="fn1">1</sup>Vectors can get combined into a matrix and matrices into arrays, these are structures needed when doing some nice math. We are not covering those in the course. <a href="#ref1" >&#8593;</a>
+
+
+----
+
+* [Go to page beginning](#beginning)
+* [Go to PART B: Control of Execution in R](https://rawgit.com/EvansDataScience/govanalyticsweb/master/R/R_2B_IntroToProgramming_controlExecution.html)
+* [Go to PART C: Building functions in R](https://rawgit.com/EvansDataScience/govanalyticsweb/master/R/R_2C_IntroToProgramming_functions.html)
+* [Go to Course schedule](https://evansdatascience.github.io/GovernanceAnalytics/)
+
+
+
+
+
+
+
