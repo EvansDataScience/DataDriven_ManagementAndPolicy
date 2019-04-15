@@ -748,8 +748,3 @@ students[order(-ages),]
 
 * [Go to page beginning](#beginning)
 * [Go to Course schedule](https://ds4ps.org/ddmp-uw-class-spring-2019/schedule/)
-
-
-```{r, eval=FALSE}
-
-```

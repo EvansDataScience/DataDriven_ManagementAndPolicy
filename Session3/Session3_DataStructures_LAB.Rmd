@@ -1,0 +1,31 @@
+
+<br> 
+<center><img src="http://i.imgur.com/sSaOozN.png" width="500"></center>
+
+
+## Course: Data-Driven Management and Policy
+
+### Prof. José Manuel Magallanes, PhD 
+
+_____
+
+# Session 3 LAB: Data Structures
+
+
+#Lab Instructions
+
+This lab is designed to give you practice manipulating basic R data structures. In addition, it should give you more practice using R and Markdown.
+
+## Part 1: Get data
+
+## Part 4: Final Project
+
+* Specify what action or intervention you will begin in two weeks as your experiment. 
+* Which of your measures do you expect to see a difference in based on that experiment (you can see it in multiple)?
+* What is your hypothesis, do you think that measure will increase or decrease? It is recommended that you begin your data collection by tonight, although in the next few days will also work.
+
+
+----
+
+* [Go to page beginning](#beginning)
+* [Go to Course schedule](https://ds4ps.org/ddmp-uw-class-spring-2019/schedule/)
