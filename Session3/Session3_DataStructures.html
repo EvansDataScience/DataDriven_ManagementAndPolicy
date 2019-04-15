@@ -377,6 +377,19 @@ newAges</code></pre>
 <p>The more familiar function <em>as.numeric</em> can be used, but that will also delete the field names:</p>
 <pre class="r"><code>newAges=as.numeric(newAges)
 newAges</code></pre>
+<p>Notice that <em>as.numeric</em> coerces text into missing values, if the text is not a number:</p>
+<pre class="r"><code>someData1=c(1,2,3,'4')
+as.numeric(someData1)</code></pre>
+<pre><code>## [1] 1 2 3 4</code></pre>
+<p>But,</p>
+<pre class="r"><code>someData2=c(1,2,3,'O') # O not 0
+as.numeric(someData2)</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre><code>## [1]  1  2  3 NA</code></pre>
+<p>You can use the <strong>is.na</strong> function to know if some coercing may happen:</p>
+<pre class="r"><code>is.na(as.numeric(someData2))</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre><code>## [1] FALSE FALSE FALSE  TRUE</code></pre>
 <div id="vectors-versus-lists" class="section level3">
 <h3>Vectors versus Lists</h3>
 <p>Let me share some ideas for comparing these two basic structures:</p>
@@ -470,6 +483,13 @@ students[,c('names','education')]</code></pre>
 <p>Of course, you can create a new object with <strong>subsets</strong>:</p>
 <pre class="r"><code>studentsNoEd=students[,c(1:3)]
 studentsNoEd</code></pre>
+<p>You have a <em>summary</em> function:</p>
+<pre class="r"><code>summary(students)</code></pre>
+<p>If you had the categorical value as a factor, you could get a frequecy table:</p>
+<pre class="r"><code>students$country=as.factor(students$country)
+students$education=as.factor(students$education)</code></pre>
+<p>Then,</p>
+<pre class="r"><code>summary(students)</code></pre>
 <p>You can modify any values in a data frame. Let me create a copy of this data frame to play with:</p>
 <pre class="r"><code>studentsCopy=students # I make a copy to avoid altering my original dataframe</code></pre>
 <p>Now, I can change the age of Qing to 23 replacing 32:</p>

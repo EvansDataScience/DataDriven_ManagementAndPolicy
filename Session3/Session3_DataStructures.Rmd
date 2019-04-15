@@ -401,6 +401,25 @@ newAges=as.numeric(newAges)
 newAges
 ```
 
+Notice that _as.numeric_ coerces text into missing values, if the text is not a number:
+
+```{r}
+someData1=c(1,2,3,'4')
+as.numeric(someData1)
+```
+
+But,
+```{r}
+someData2=c(1,2,3,'O') # O not 0
+as.numeric(someData2)
+```
+
+You can use the **is.na** function to know  if some coercing may happen:
+```{r}
+is.na(as.numeric(someData2))
+```
+
+
 ### Vectors versus Lists
 
 Let me share some ideas for comparing these two basic structures:
@@ -641,6 +660,24 @@ Of course, you can create a new object with **subsets**:
 studentsNoEd=students[,c(1:3)]
 studentsNoEd
 ```
+
+You have a _summary_ function:
+```{r, eval=FALSE}
+summary(students)
+```
+
+If you had the categorical value as a factor, you could get a frequecy table:
+```{r, eval=FALSE}
+students$country=as.factor(students$country)
+students$education=as.factor(students$education)
+```
+
+Then,
+
+```{r, eval=FALSE}
+summary(students)
+```
+
 
 You can modify any values in a data frame. Let me create a copy of this data frame to play with:
 

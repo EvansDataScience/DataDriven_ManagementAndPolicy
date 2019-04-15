@@ -22,7 +22,7 @@ You have this information from Governor Inslee:
 
 ![](lab3_list.png)
 
-The information was got from [wikipedia])(https://en.wikipedia.org/wiki/Jay_Inslee). 
+The information was got from [wikipedia](https://en.wikipedia.org/wiki/Jay_Inslee). 
 
 Make a list, in a way you can answer these questions:
 
@@ -132,8 +132,8 @@ My best guess is that this value is atually a _4_, so there is some kind of mist
 ### YOUR TURN:
 
 * Use the data you downloaded last week.
-* Using **str()**, verify if there is a numeric value that has been read as text. If so, please modify it. If there were several, do not use more than three.
-* Identify if there are weird values in the numeric columns (now all re formatted). If there were several, do not use more than three.
+* Using **str()**, verify if there is a numeric value that has been read as text. If so, please modify it. If there were several numeric columns, do not use more than three.
+* Identify if there are weird values in the numeric columns (now all re formatted). If there were several numeric columns, do not use more than three.
 
 
 ## Part 4: Final Project
