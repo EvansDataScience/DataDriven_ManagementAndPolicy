@@ -300,9 +300,9 @@ You can alter the vector using any of the above mechanisms:
 
 
 ```{r, eval=FALSE}
-names[1]='Alfred Mayer'
+fullnames[1]='Alfred Mayer'
 # Then:
-names[1]
+fullnames[1]
 ```
 
 You can add an element to a vector like this:
@@ -370,7 +370,7 @@ newAges=c("Sam"=50, "Paul"=30, "Jim"="40")
 newAges
 ```
 
-As you see above, the presence of "Jim" as an element, *coerced* the other values to *characters* (the _numbers_ are now _text_, the symbol **''** is used to show that). Updating that value, will not change the vector type:
+As you see above, the presence of "40"  as an element, *coerced* the other values to *characters* (the _numbers_ are now _text_, the symbol **''** is used to show that). Updating that value, will not change the vector type:
 
 
 ```{r, eval=FALSE}
@@ -580,7 +580,6 @@ You see your data frame above. Just by watching, you can not be sure of what you
 str(students)
 ```
 
-This data frame uses the vector 'names' as the __row names__, so that vector is not considered a column, that is fine:
 
 By default, R turns text vectors into factors (categorical values)You can avoid that by writing:
 
@@ -610,7 +609,7 @@ nrow(students) ; ncol(students)
 length(students)
 ```
 
-We know _length_ works for vectors and lists. In data frames, it gives you number of columns, NOT rows. 
+The function _length_ works for vectors and lists telling the amount of elements. In data frames, it gives you number of columns, NOT rows. 
 
 Data frames have the functions __head()__, which is very useful to show the top rows of the dataframe:
 

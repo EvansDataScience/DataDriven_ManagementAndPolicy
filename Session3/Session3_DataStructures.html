@@ -337,9 +337,9 @@ ages[1]</code></pre>
 <pre class="r"><code># or
 female[1]</code></pre>
 <p>You can alter the vector using any of the above mechanisms:</p>
-<pre class="r"><code>names[1]='Alfred Mayer'
+<pre class="r"><code>fullnames[1]='Alfred Mayer'
 # Then:
-names[1]</code></pre>
+fullnames[1]</code></pre>
 <p>You can add an element to a vector like this:</p>
 <pre class="r"><code>elements=c(1,20,3)
 elements=c(elements,40) # adding to the same one
@@ -366,7 +366,7 @@ weekdays</code></pre>
 <p>Vector elements can have ‘names’, but their contents still need to be homogeneous:</p>
 <pre class="r"><code>newAges=c(&quot;Sam&quot;=50, &quot;Paul&quot;=30, &quot;Jim&quot;=&quot;40&quot;)
 newAges</code></pre>
-<p>As you see above, the presence of “Jim” as an element, <em>coerced</em> the other values to <em>characters</em> (the <em>numbers</em> are now <em>text</em>, the symbol <strong>’’</strong> is used to show that). Updating that value, will not change the vector type:</p>
+<p>As you see above, the presence of “40” as an element, <em>coerced</em> the other values to <em>characters</em> (the <em>numbers</em> are now <em>text</em>, the symbol <strong>’’</strong> is used to show that). Updating that value, will not change the vector type:</p>
 <pre class="r"><code>newAges[&quot;Jim&quot;]=20
 newAges</code></pre>
 <p>Updating the value will not take away the initial coercion.</p>
@@ -455,7 +455,6 @@ students=data.frame(names,ages,country,education)
 students</code></pre>
 <p>You see your data frame above. Just by watching, you can not be sure of what you have, so using <strong>str</strong> is highly recommended:</p>
 <pre class="r"><code>str(students)</code></pre>
-<p>This data frame uses the vector ‘names’ as the <strong>row names</strong>, so that vector is not considered a column, that is fine:</p>
 <p>By default, R turns text vectors into factors (categorical values)You can avoid that by writing:</p>
 <pre class="r"><code>students=data.frame(names,ages,country,education,
                     stringsAsFactors=FALSE)
@@ -466,7 +465,7 @@ str(students)</code></pre>
 nrow(students) ; ncol(students) </code></pre>
 <pre class="r"><code># and very important:
 length(students)</code></pre>
-<p>We know <em>length</em> works for vectors and lists. In data frames, it gives you number of columns, NOT rows.</p>
+<p>The function <em>length</em> works for vectors and lists telling the amount of elements. In data frames, it gives you number of columns, NOT rows.</p>
 <p>Data frames have the functions <strong>head()</strong>, which is very useful to show the top rows of the dataframe:</p>
 <pre class="r"><code>head(students,2) # top 2</code></pre>
 <p>Of course, we have <strong>tail</strong>:</p>
