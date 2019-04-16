@@ -136,7 +136,7 @@ My best guess is that this value is atually a _4_, so there is some kind of mist
 * Identify if there are weird values in the numeric columns (now all re formatted). If there were several numeric columns, do not use more than three.
 
 
-## Part 4: Final Project
+## Part 3: Final Project
 
 * Specify what action or intervention you will begin in two weeks as your experiment. 
 * Which of your measures do you expect to see a difference in based on that experiment (you can see it in multiple)?

@@ -20,7 +20,7 @@ _____
 Before starting, keep in mind the following ideas:
 
 * Computers and  humans need some structure in their language to communicate.
-* Different from humans, we should not allowed the computer to guess what we mean. Then, talking to the computer has to follow a particular set of rules so our orders are unambiguos. 
+* Different from humans, we should not allowed the computer to guess what we mean. Then, talking to the computer has to follow a particular set of rules so our orders are unambiguous. 
 * Errors happen when we do not speak clearly to the computer; but it is worse if the computer does something we did not mean.
 * Data structures is the way the computer organizes pieces of data, so it can be stored, retrieved, used and modified.
 
@@ -378,7 +378,7 @@ newAges["Jim"]=20
 newAges
 ```
 
-Updating the vlaue will not take away the initial coercion.
+Updating the value will not take away the initial coercion.
 
 Then, you could tell explicitly to change the _mode_ of the vector:
 
@@ -458,7 +458,7 @@ str(aList)
 
 __B) Arithmetics:__
 
-You will find great differences when doing arithmetics:
+You will find great differences when doing arithmetic:
 
 
 ```{r, eval=FALSE}
@@ -502,7 +502,7 @@ However, R will give another warning here:
 numbers1+numbers4 # different size matters!
 ```
 
-Comparissons make sense:
+Comparisons make sense:
 
 
 ```{r, eval=FALSE}
@@ -666,7 +666,7 @@ You have a _summary_ function:
 summary(students)
 ```
 
-If you had the categorical value as a factor, you could get a frequecy table:
+If you had the categorical value as a factor, you could get a frequency table:
 ```{r, eval=FALSE}
 students$country=as.factor(students$country)
 students$education=as.factor(students$education)

@@ -204,7 +204,7 @@ $(document).ready(function () {
 <p>Before starting, keep in mind the following ideas:</p>
 <ul>
 <li>Computers and humans need some structure in their language to communicate.</li>
-<li>Different from humans, we should not allowed the computer to guess what we mean. Then, talking to the computer has to follow a particular set of rules so our orders are unambiguos.</li>
+<li>Different from humans, we should not allowed the computer to guess what we mean. Then, talking to the computer has to follow a particular set of rules so our orders are unambiguous.</li>
 <li>Errors happen when we do not speak clearly to the computer; but it is worse if the computer does something we did not mean.</li>
 <li>Data structures is the way the computer organizes pieces of data, so it can be stored, retrieved, used and modified.</li>
 </ul>
@@ -369,7 +369,7 @@ newAges</code></pre>
 <p>As you see above, the presence of “Jim” as an element, <em>coerced</em> the other values to <em>characters</em> (the <em>numbers</em> are now <em>text</em>, the symbol <strong>’’</strong> is used to show that). Updating that value, will not change the vector type:</p>
 <pre class="r"><code>newAges[&quot;Jim&quot;]=20
 newAges</code></pre>
-<p>Updating the vlaue will not take away the initial coercion.</p>
+<p>Updating the value will not take away the initial coercion.</p>
 <p>Then, you could tell explicitly to change the <em>mode</em> of the vector:</p>
 <pre class="r"><code>storage.mode(newAges)</code></pre>
 <pre class="r"><code>storage.mode(newAges)='double' # or integer
@@ -405,7 +405,7 @@ is.vector(aList,mode='vector'); is.list(aList)</code></pre>
 <pre class="r"><code>str(aVector)</code></pre>
 <pre class="r"><code>str(aList)</code></pre>
 <p><strong>B) Arithmetics:</strong></p>
-<p>You will find great differences when doing arithmetics:</p>
+<p>You will find great differences when doing arithmetic:</p>
 <pre class="r"><code># if we have these vectors:
 numbers1=c(1,2,3)
 numbers2=c(10,20,30)
@@ -422,7 +422,7 @@ numbers1*numbers2</code></pre>
 numbers1 * numbers3</code></pre>
 <p>However, R will give another warning here:</p>
 <pre class="r"><code>numbers1+numbers4 # different size matters!</code></pre>
-<p>Comparissons make sense:</p>
+<p>Comparisons make sense:</p>
 <pre class="r"><code>numbers1&gt;numbers2</code></pre>
 <pre class="r"><code># but:
 numbers1&gt;numbers4</code></pre>
@@ -485,7 +485,7 @@ students[,c('names','education')]</code></pre>
 studentsNoEd</code></pre>
 <p>You have a <em>summary</em> function:</p>
 <pre class="r"><code>summary(students)</code></pre>
-<p>If you had the categorical value as a factor, you could get a frequecy table:</p>
+<p>If you had the categorical value as a factor, you could get a frequency table:</p>
 <pre class="r"><code>students$country=as.factor(students$country)
 students$education=as.factor(students$education)</code></pre>
 <p>Then,</p>
