@@ -1,0 +1,729 @@
+
+<br> 
+<center><img src="http://i.imgur.com/sSaOozN.png" width="500"></center>
+
+
+## Course: Data-Driven Management and Policy
+
+### Prof. José Manuel Magallanes, PhD 
+
+_____
+
+
+# Session 4: Working with Data Frames
+
+<a id='beginning'></a>
+
+
+The data frame is a common data structure for people with experience with spreasheets or data tables. It is just that: a collection of rows with several columns. However, each software application has its own way of dealing with data frames.
+
+In this session, we will learn the main strategies that we use to deal with data frames:
+
+1. [Logical Operators.](#part1) 
+2. [Control of Execution.](#part2) 
+3. [Functions.](#part3) 
+
+----
+
+<a id='part1'></a>
+
+## Logical Operators
+
+Let me open a simple data frame froman Excel file:
+```{r, eval=TRUE}
+library(rio)
+fileName='people.xlsx'
+people=import(fileName) # table '1'
+people
+```
+
+
+The first step is making sure of what data types you have:
+
+```{r, eval=TRUE}
+str(people)
+```
+
+Here, you need to decide if you are satisfied with the data types you have. At least you see that the numeric columns are read as that by R. But, education represented as a number is a clear case where you need a category:
+
+```{r}
+table(people$education)
+```
+
+It makes sense to turn that variable into an ordinal factor:
+```{r}
+people$education=factor(people$education,
+                        levels=c(1,2,3),
+                        labels=c(1,2,3),
+                        ordered = T)
+```
+
+
+You may be tempted to turn the column _state_ into a factor, but you should do that after  you are completely sure that column has no issues. Let's check:
+
+```{r}
+table(people$state)
+```
+
+What issues might you have found? In this case all looks ok, but if you had had 'FL' and 'FLO', meaning both 'Florida' you must first change FLO into FL and then turn the column into a factor, if you want it so (you had to clean that wrong value regardless whether you turn that into a factor).
+
+Unless there is a good reason to believe that a text column is a factor, I will just leave it as it is now.
+
+
+
+The purpose of logical operatos can be divided into:
+
+* Detecting compliance
+
+**How many people are older that 30?**
+```{r}
+# count:
+sum(people$ages>30)
+```
+```{r}
+# count:
+nrow(people[people$ages>30,])
+```
+```{r}
+#count:
+table(people$ages>30)
+```
+
+```{r}
+# percent:
+mean(people$ages>30)
+```
+
+```{r}
+# percent:
+nrow(people[people$ages>30,])/nrow(people)
+```
+```{r}
+# percent:
+prop.table(table(people$ages>30))
+```
+
+* Replacing
+
+I will create a new column identical to age:
+```{r}
+people$ageGroup=people$ages
+```
+```{r}
+people
+```
+
+Now I can make replacements:
+```{r}
+people$ageGroup[people$ageGroup<=33]=2
+people$ageGroup[people$ageGroup>33]=1
+```
+
+Notice that the order of the replacing statements is important; if you do this
+```{r}
+#people$ageGroup[people$ageGroup>33]=1
+#people$ageGroup[people$ageGroup<=33]=2
+```
+
+The last column will have only one value: 2.
+
+
+* Subsetting 
+
+
+
+**case 1: selecting rows**
+
+```{r}
+#People from WA
+
+condition=c("WA")
+people[people$state %in% condition,]
+```
+
+```{r}
+#People from WA and NY
+
+condition=c("WA","NY")
+people[people$state %in% condition,]
+```
+
+
+```{r}
+#People top two highest levels
+
+condition=c(2,3)
+people[people$education %in% condition,]
+
+```
+
+```{r}
+#People top two highest levels
+people[people$education >= 2,] # valid for factors
+```
+
+The logical operator ">=" can not be used in text, or nominal variables, as they do not have order.
+
+
+```{r}
+#People aged 37 OR 25
+
+condition=c(37,25)
+people[people$ages %in% condition,]
+
+```
+
+```{r}
+#People older than 35
+
+condition=35
+people[people$ages > condition,]
+
+```
+
+
+```{r}
+# the youngest person/people
+condition=min(people$ages)
+people[people$ages==condition,] 
+```
+
+```{r}
+# compare
+people[which.min(people$ages),] 
+```
+
+**Multiple columns** brings the challenge of dealing with several data types:
+
+```{r}
+# older than 35 OR younger than 27
+people[people$ages>35 | people$ages<27,]
+```
+
+```{r}
+# younger than 27 WITH education level 2
+people[people$ages<27 & people$education==2,]
+```
+
+```{r}
+# younger than 30 WITH education level 2 or 3
+condition=c(2,3)
+people[people$ages<30 & people$education %in% condition,]
+```
+
+```{r}
+# older than 30 WITH education level 2 OR 3 FROM NY
+condition=c(2,3)
+
+people[ people$ages>30& 
+           people$education %in% condition &
+           people$state=='NY',]
+```
+
+R has the **filter()** function which allows the selection of rows in an 'english language' approach:
+
+```{r}
+library(dplyr)
+filter( people, ages > 30 & 
+            education %in% condition & 
+            people$state=='NY'  )
+```
+
+
+**case 2: selecting columns**
+
+This is how you can get some columns:
+
+```{r}
+people[,c('cod','state')] # notice the comma position
+```
+
+
+This can be also done by using **select** (from dplyr)
+
+```{r}
+select(people, c('cod','state'))
+```
+
+Or like this:
+
+```{r}
+select(people, cod,state)
+```
+
+Notice that dplyr functions are very useful when using the **pip** operator. Then, you can turn this:
+
+```{r}
+# older than 35 OR younger than 27
+people[people$ages>35 | people$ages<27,c('cod','state')]
+```
+
+Into this:
+
+```{r}
+people %>% filter(ages>35 | ages<27) %>% select(cod,state)
+```
+
+
+**Note on missing values**
+
+It is always a good practice, when you know missing values are present:
+
+```{r}
+people$ageGroup[1]
+```
+```{r}
+#turning as  missing:
+people$ageGroup[1]=NA
+
+# then
+people
+```
+```{r}
+people[people$ageGroup==1,]
+```
+```{r}
+people[people$ageGroup!=1,]
+```
+R gave you a row with all missing values. This happens when your query uses a column with a _NA_. You may want to use this to create your sub data frame:
+
+
+```{r}
+people[people$ageGroup>1 & !is.na(people$ageGroup) ,]
+
+```
+
+
+<a id='part2'></a>
+
+## Control of Execution
+
+We will teach soon how to build functions, and for that you may want to have some knowledge on how to program in R. For that, you need to know how you can control the execution of code. This is done via:
+
+* Conditional execution
+* Repetitive execution
+
+**CONDITIONAL EXECUTION** is how you tell the computer what part of a code to execute, depending if an event is true or false.
+
+```{r conditionalExec, eval=TRUE}
+###### INPUT
+value=-100
+
+###### CONDITIONAL EXECUTION
+
+if (value >= 0){ 
+  # what to do if condition is TRUE
+  rootValue=sqrt(value)
+  print (rootValue)
+} else {  
+  # what to do if condition is FALSE
+  print('Sorry, I do not compute square roots of negative numbers')
+}
+```
+
+Notice the use of **parenthesis** in the condition. Also, the use of **{}**  to enclose the commands. You do not need those curly braces if you have just _one_ command after the condition. If you omitted the whole **else{}** section, the program will still run, but the program will not get a message when the input is invalid.
+
+
+**REPETITIVE EXECUTION** is how you tell the computer to do something many times (and stop when it has to):
+
+```{r loopPrint, eval=TRUE}
+values=c(9,25,100)
+
+for (value in values){ # do this for each value in values
+  print(sqrt(value))
+}
+```
+
+You do not need to show each result, you could save the results.
+```{r loopSave, eval=TRUE}
+values=c(9,25,100,500)
+rootValues=c() # empty vector
+for (value in values){
+  rootValues=c(rootValues,sqrt(value)) # updating vector
+}
+```
+
+Then, you see what you saved:
+```{r}
+# to see the results:
+rootValues
+```
+
+It is evident that combining *loops* and *control of execution*, we can make better programs. For example, this code is not controlling well the process:
+
+```{r loopSave2, eval=TRUE}
+values=c(9,25,-100)
+rootValues=c()
+for (value in values){
+  rootValues=c(rootValues,sqrt(value))
+}
+
+```
+Then,
+```{r}
+# to see the results:
+rootValues
+```
+
+In the last result, R decided what to do when a negative value was input (it also sent a warning). This one does a better job:
+
+```{r loopSave3, eval=TRUE}
+values=c(9,25,-100,144,-72)
+rootValuesNew=c()
+
+for (value in values){
+  if (value >=0){
+    rootValuesNew=c(rootValuesNew,sqrt(value))
+  }else {
+    print('We added a missing value, negative input detected')
+    rootValuesNew=c(rootValuesNew,NA)
+  }
+}
+```
+
+Then,
+
+```{r}
+# to see the results:
+rootValues
+```
+
+We are producing an ouput with the same size as input. If we omit the **else** structure, we will produce an output with smaller size than the input. 
+
+
+You can also use **break** when you consider the execution should stop:
+
+```{r break, eval=TRUE}
+values=c(9,25,-100,144,-72)
+rootValues=c()
+for (value in values){
+  if (value <0){
+    print('We need to stop, invalid value detected')
+    break
+  }
+  rootValues=c(rootValues,sqrt(value))
+}
+rootValues
+```
+
+The code above halted the program. 
+
+You can use **next** when you consider the execution should continue:
+
+```{r NEXT, eval=TRUE}
+values=list(9,NA,'1000',-100,144,-72)
+
+
+for (value in values){
+  if (is.na(value)){
+    print('missing value as input')
+    next
+  }
+  
+  if (value <0){
+    print('negative value as input')
+    next
+  }
+  
+  if (is.character(value)){
+    print('char as input')
+    next
+  }
+  rootVal=sqrt(value)
+  print(paste(rootVal,'is the root of ',value))
+}
+```
+
+[Go to page beginning](#beginning)
+
+____
+<a id='part3'></a>
+
+
+## Functions
+
+We build functions to make the code more readable. Functions plus the data structures and control of execution capabilities you saw before will give you the basic tools you need to develop your own programs. 
+
+A function is a three-step process: Input, Transformation, Output. For example, if you need to convert a numeric value from Fahrenheit into Celsius , the input is the value in Fahrenheit, the transformation is the formula, and the output the result of the formula (a value in Celsius).
+
+```{r funcBasic, eval=TRUE}
+converterToCelsius=function(valueInFarenheit){ #input
+  #transformation
+  resultInCelsius= (valueInFarenheit-32)*5/9
+  #output
+  return (resultInCelsius)}
+```
+
+A function has a name (for example: _converterToCelsius_) to the left of the **=**, then _a definition of the input of the function_ using the reserved word **function**, the _process_ between **{}**; the process  _output_ (for example: _resultInCelsius_), which requires the keyword **return** and **()**. You can omit the _return_ command and a function still works; in that case, R will output the last line that was **executed**; I avoid doing that as it impoverishes reading the code. Above, we created a function, and after you run it,  R has a new function available:
+
+```{r funcBasicUse, eval=TRUE}
+converterToCelsius(100)
+```
+
+
+### The function input
+
+We control the amount of input in a function:
+```{r, eval=TRUE}
+# this function requires TWO inputs:
+XsumY=function(valueX,valueY){
+  ###
+  resultSum=valueX+valueY
+  ###
+  return (resultSum)
+}
+```
+
+
+The code above receives two values and outputs their sum. You can see how it works this way:
+```{r, eval=TRUE}
+XsumY(3,10)
+```
+
+
+You can have some inputs with _default_ values:
+```{r, eval=TRUE}
+riseToPower=function(base,exponent=2){
+  #####
+  result=1
+  if (exponent > 0){
+    for (time in 1:exponent){
+      result=result*base
+    }
+  }
+  #####
+  return(result)
+}
+```
+
+Since you have a default value in the input arguments, you decide if you give that input or not. Let's see how it works:
+
+```{r, eval=TRUE}
+riseToPower(9)
+riseToPower(9,3)
+riseToPower(9,0)
+# for sure you can use the argument name:
+riseToPower(base=9,exponent=0)
+# using arguments names does not require order:
+riseToPower(exponent=0,base=9)
+```
+
+
+
+Functions need argument names in the input definition, but if you have many arguments, you need to keep the order:
+
+```{r FUN-divRounded}
+# Then
+divRounded=function(numerator,denominator,precision=2){
+    if (denominator==0){
+      return('You can not use 0 as the denominator')
+    }
+    result = numerator/denominator
+    return (round(result, precision))
+}
+```
+
+Testing this function:
+```{r, eval=TRUE}
+n=13
+d=12
+p=3
+divRounded(n,d,p)
+
+```
+
+
+
+### The function output
+
+
+Our output has been a single value, but it can be several ones; however, you need the right structure.
+
+```{r, eval=TRUE}
+# one input, and several output in simple data structure:
+factors=function(number){
+  vectorOfAnswers=c() # empty vector that will collect output
+  for (i in 1:number){
+    #if the remainder of 'number'/'i' equals zero...
+    if ((number %% i) == 0){ 
+      # ...add 'i' to the vector of factors!
+      vectorOfAnswers=c(vectorOfAnswers,i)
+    }
+  }
+  return (vectorOfAnswers) # returning  the vector
+}
+```
+
+Testing:
+```{r, eval=TRUE}
+factors(20) 
+```
+
+
+### Applying functions to data structures
+
+Imaging you have created a function that converts a value like:
+
+```{r, eval=TRUE}
+double=function(x){
+    return (2*x)}
+```
+
+and you have this vector:
+
+```{r, eval=TRUE}
+myVector=c(1,2,3)
+```
+
+What can you get here?
+```{r, eval=TRUE}
+double(myVector)
+```
+
+If you use a vector as an input in a function in R, R will apply the function to each element. 
+
+If you use a list of numbers as input:
+
+```{r}
+myList=list(1,2,3)
+```
+
+You get:
+```{r, eval=FALSE}
+
+double(myList)
+```
+
+
+...you get an error. In this case, you can use **Map** or **mapply**:
+```{r, eval=TRUE}
+# Map returns a list, and the input can be a vector or a list
+Map(double,myList)
+```
+
+You can also use **mapply**:
+```{r}
+# mapply returns a vector, and the input can be a vector or a list
+mapply(double,myList)
+
+```
+
+Notice that the outputs are returned in different data structures.
+
+We will be using data frames often. This is a particular structure that has its owns mechanism to apply functions:
+
+```{r, eval=TRUE}
+numberA=c(10,20,30,40,50)
+numberB=c(6,7,8,9,10)
+dataDF=data.frame(numberA,numberB)
+dataDF
+```
+
+Let's _double_ each value applying the function _directly_ to the data frame:
+```{r, eval=TRUE}
+double(dataDF)
+```
+
+
+As you saw above, the function _double_ was designed to receive as input a simple value (a number). Then, without effort from your side, R itself decided to apply it to each element in the data frame. 
+
+Try now simple function as **as.character()** :
+```{r, eval=TRUE}
+as.character(dataDF)
+```
+
+You just created a vector with two values:
+```{r}
+x=as.character(dataDF)
+```
+
+This one:
+```{r}
+x[1]
+```
+
+And, this one:
+```{r}
+x[2]
+```
+
+I am pretty sure, this is not what you wanted.
+
+You wanted to turn every value in the data frame into a character. You know that it works in one column (but not in a data frame):
+```{r}
+as.character(dataDF$numberA)
+```
+
+We can use *Map()*:
+
+```{r}
+Map(as.character,dataDF)
+```
+
+Or the very common **lapply()**:
+
+```{r, eval=TRUE}
+lapply(dataDF,as.character)
+```
+
+This last function is extremely important. We got lists as output, your job will be to get a data frame:
+
+```{r, eval=TRUE}
+# a copy
+dataDF2=dataDF
+
+# then:
+
+dataDF2=lapply(dataDF2,as.character)
+dataDF2
+```
+
+That did not work. Let's try this
+```{r}
+# selecting columns:
+dataDF[,c(1,2)]=lapply(dataDF[,c(1,2)],as.character)
+
+dataDF
+```
+
+
+Then, to get the data frame, you need to specify the columns.
+
+Let me turn the values back to numbers:
+
+```{r}
+dataDF[,c(1,2)]=lapply(dataDF[,c(1,2)],as.numeric)
+```
+
+
+There are functions that could be applied to columns or rows, keep in mind that **lapply** applies a function to column.
+```{r, eval=TRUE}
+# you are adding the column values here:
+as.data.frame(lapply(dataDF,sum))
+```
+
+If you need to apply a function by row or by column, the right option is **apply**:
+```{r, eval=TRUE}
+# you are adding by row:
+apply(dataDF,1,sum) # 1 to apply by row (2 for column).
+```
+
+Let me use the data frame _people_ to show **tapply**
+
+```{r}
+tapply(X=people$ages,INDEX=list(people$education),FUN=mean)
+```
+
+This function applies a function to X, organised by the variables in INDEX. Then:
+```{r}
+tapply(X=people$ages,INDEX=list(people$education,people$ageGroup),FUN=mean)
+```
+
+The results are not data frames. You can get them using:
+```{r}
+people  %>%  
+    group_by( education, ageGroup )  %>%  
+    summarize(mean(ages))  # summarize('means'=mean(ages))
+```
+
+

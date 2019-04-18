@@ -1,0 +1,59 @@
+
+<br> 
+<center><img src="http://i.imgur.com/sSaOozN.png" width="500"></center>
+
+
+## Course: Data-Driven Management and Policy
+
+### Prof. José Manuel Magallanes, PhD 
+
+_____
+
+# Session 3 LAB: Data Structures
+
+
+#Lab Instructions
+
+This lab is designed to give you practice manipulating basic R data structures. In addition, it should give you more practice using R and Markdown.
+
+
+
+### Homework
+
+Change the above function to create the function **riseToPowerPlus**, which gives a good answer even when the power is negative.
+
+```{r hw1, echo=FALSE, eval=FALSE}
+riseToPowerPlus=function(base,exponent=2){
+  #####
+  flagNegative=FALSE
+  if (exponent<0){
+    exponent=-exponent
+    flagNegative=TRUE
+  }
+  result=1
+  if (exponent>0){
+    for (time in 1:exponent){
+      result=result*base
+    }
+  }
+
+  if (flagNegative){
+    result=(1/result)
+  }
+  #####
+  return(result)
+}
+```
+
+
+### Homework:  
+
+1. Change the function 'factors' to reduce the amount of iterations in the **for** loop and still get the factors shown above.
+2. Change your new function 'factors' to avoid negative values or zeros as input; your code should return a message if an invalid valid was input.
+2. Change your newest function 'factors' to accept only positive integer values; your code should return a message if an invalid valid was input.
+
+
+----
+
+* [Go to page beginning](#beginning)
+* [Go to Course schedule](https://ds4ps.org/ddmp-uw-class-spring-2019/schedule/)
