@@ -9,48 +9,71 @@
 
 _____
 
-# Session 3 LAB: Data Structures
+# Session 4 LAB: Working with Data Frames
 
 
 #Lab Instructions
 
-This lab is designed to give you practice manipulating basic R data structures. In addition, it should give you more practice using R and Markdown.
+## Part 1:
 
+You saw this code in the session:
 
-
-### Homework
-
-Change the above function to create the function **riseToPowerPlus**, which gives a good answer even when the power is negative.
-
-```{r hw1, echo=FALSE, eval=FALSE}
-riseToPowerPlus=function(base,exponent=2){
-  #####
-  flagNegative=FALSE
-  if (exponent<0){
-    exponent=-exponent
-    flagNegative=TRUE
-  }
-  result=1
-  if (exponent>0){
-    for (time in 1:exponent){
-      result=result*base
+```{r, eval=TRUE}
+# one input, and several output in simple data structure:
+factors=function(number){
+    # empty vector that will collect output
+    vectorOfAnswers=c()
+    
+    # for every value in the sequence...
+    for (i in 1:number){
+        
+        #if the remainder of 'number'/'i' equals zero...
+        if ((number %% i) == 0){ 
+            
+            # ...add 'i' to the vector of factors!
+            vectorOfAnswers=c(vectorOfAnswers,i)
     }
   }
-
-  if (flagNegative){
-    result=(1/result)
-  }
-  #####
-  return(result)
+  return (vectorOfAnswers) # returning  the vector
 }
 ```
 
+This function accepted an integer number and returned its factors. Please answer these questions:
 
-### Homework:  
+1. For any number **N**, how many times does the **for** section is executed to compute the factos of **N**?
 
-1. Change the function 'factors' to reduce the amount of iterations in the **for** loop and still get the factors shown above.
-2. Change your new function 'factors' to avoid negative values or zeros as input; your code should return a message if an invalid valid was input.
-2. Change your newest function 'factors' to accept only positive integer values; your code should return a message if an invalid valid was input.
+2. Make a change in the code to reduce the times the **for** section is executed.
+
+
+## Part 2:
+
+Open the file *demo_hdi*, it is a csv file in the folder you downloaded. Then,
+
+* Get the max value of _human development index_ for each type of democracy. 
+
+You should get something like this:
+
+![](outputMax.png) 
+
+
+* Use those values to select the rows whose hdi matches one of those. 
+
+You should get something like this:
+
+![](outputRows.png)
+
+* Turn that wide format into a long format. 
+
+You should get something like this:
+
+![](outputLong.png)
+
+
+## Final project reminder:
+
+1. Keep collecting data (and start if you haven't). 
+
+2. Be ready to start your experiment soon.
 
 
 ----

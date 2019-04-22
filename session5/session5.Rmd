@@ -1,0 +1,568 @@
+
+<br> 
+<center><img src="http://i.imgur.com/sSaOozN.png" width="500"></center>
+
+
+## Course: Data-Driven Management and Policy
+
+### Prof. José Manuel Magallanes, PhD 
+
+_____
+
+
+# Session 5: Intro to Visualization
+
+<a id='toc'></a>
+_____
+
+Contents:
+
+Part 1:
+
+1. [Nominal Visualization.](#nominalviz)
+2. [Ordinal Visualization.](#ordinalviz)
+3. [Integers Visualization.](#integerviz)
+4. [Decimals Visualization.](#decimalviz)
+
+Part 2: [Improving visual elements.](#improveviz)
+
+Part 3: [Higher dimensional cases.](#higherviz)
+
+    
+
+_____
+
+We are very familiar with data frames and data types. From that knowledge we will learn how information can be obtained using a visual approach. 
+
+Let me get some data from the [website](https://nces.ed.gov/ccd/) of the Common Core of Data from the US Department of Education. There you can get a data set with detailed information on public schools at the state of Washington:
+
+
+
+```{r getData, eval=TRUE}
+link='https://github.com/EvansDataScience/VisualAnalytics_2_tabularData/raw/master/data/eduwa.rda'
+
+#getting the data TABLE from the file in the cloud:
+load(file=url(link))
+```
+
+Generally speaking, you have either _categorical_ or _numerical_ data in each column, and whatever question you have, you first need to know how that variable you are planing to use has been encoded:
+
+```{r dataSTR, eval=TRUE}
+# this 'width = 70,strict.width='cut' means
+# you do not want to see more than 70 characters per row.
+
+str(eduwa,width = 70,strict.width='cut')
+```
+
+The ones that say **num** are obviously numbers (numbers in R are *numeric* when decimal values are detected, and *integer* if they are not). The ones that say **chr** are strings, which are _candidates_ to be  **key** columns, which are not variables themselves, but identifiers of the cases. In this case, the first four are identifiers, as well as the the 7th, 10th and 15th columns (*school names*, _address_ and _phone_, respectively). Those variables are not to be analyzed statistically, but may be used for annotating (7th and 15th column) or for geocoding (10th column). Notice that for these data, _State_ is not to be analyzed as it is a constant (all rows are from WA); but it would be if the data were from the whole USA. Then, you see several variables identified as _factor_ or _ordered factor_, which are categorical variables: they can be analyzed statistically but not in the same way that numbers.
+
+_______
+
+
+<a id='nominalviz'></a>
+
+#### <span style="color:blue"> 1. Visualization for nominal scales</span>
+
+
+You can  get a clear idea of what a categorical data has by producing a simple **frequency table**:
+
+```{r freqTab_abs, eval=TRUE}
+# absolute values
+table(eduwa$LocaleType,exclude = 'nothing')
+```
+
+```{r freqTab_rel, eval=TRUE}
+# relative values
+absoluteT=table(eduwa$LocaleType,exclude = 'nothing')
+prop.table(absoluteT)
+```
+
+You may want to give a name to the missing values. However, when the column is a factor, you may need something like this:
+
+```{r}
+library(forcats)
+
+eduwa$LocaleType=fct_explicit_na(eduwa$LocaleType, "Unknown")
+```
+
+
+The basic option for nominal data is a barplot. However, most people tend to use pie charts with categorical data, but this **should not** be the default option to visualize classification (see this [discussion](https://medium.com/geckoboard-under-the-hood/think-before-you-pie-chart-and-more-effective-ways-to-visualize-your-data-862ea3456b26)). 
+
+Let's start by calling the library to use:
+
+```{r ggplot_call, warning=FALSE}
+library(ggplot2)
+```
+
+
+* Create the base _object_, which is not a plot, just informing the variable to plot:
+
+```{r ggplot_base, eval=TRUE}
+baseNom= ggplot(data = eduwa, 
+             aes(LocaleType)) 
+```
+
+* Request what "geometry" you want:
+
+```{r ggplot_barplot_count}
+barNom=baseNom + geom_bar()
+barNom
+```
+
+* For barplots, you may need the proportions instead, so alter the geometry like this:
+
+```{r ggplot_barplot_count}
+barNomProp=baseNom + geom_bar(aes(y=..count../sum(..count..)))
+barNomProp
+```
+
+You should always keep it simple. Then decorate. 
+
+[Go to table of contents.](#toc)
+________
+
+<a id='ordinalviz'></a>
+
+#### <span style="color:blue"> 2. Visualization for ordinal scales</span>
+
+For this section, we will use the variable that tells us the highest grade offered in a school. A simple exploration gives:
+
+```{r ordinalTable, eval=TRUE}
+table(eduwa$High.Grade,exclude = 'nothing')
+```
+
+Being a categorical variable, the default option is again the bar plot:
+
+```{r ordTable_gg, eval=TRUE}
+baseOrd = ggplot(eduwa,aes(x=High.Grade))
+barOrd=baseOrd + geom_bar() 
+barOrd
+```
+
+
+The x-values in this variable have **order**. That is, there is an increasing level in the values. Whenever we have an ordering, besides **concentration** we can visualize **symmetry**: if there is bias towards lower or higher values. 
+
+Bar plots help you see concentration and symmetry, but we have an alternative way to clearly detect symmetry, via **boxplots**:
+
+```{r boxplot_gg, eval=TRUE}
+# boxplots do not use frequency tables
+
+# as.numeric  turns levels of the factor into numbers
+baseOrd2 = ggplot(eduwa, aes(y=as.numeric(High.Grade))) 
+baseOrdBox = baseOrd2 + geom_boxplot() 
+
+baseOrdBox
+```
+
+You have symmetry when the distance of those whiskers to the  box is the same, and when the thick line is in the middle of the box. You can see that the values show a negative asymmetry as the tail towards the bottom (lowest values).
+
+Box plots expect a numeric value as an input, but we have an ordered categorical, so we used the _as.numeric()_ function. However, that eliminated the levels we saw in the previous bar plot; we can put the levels back in our plot:
+
+```{r boxplot_axis_labels, eval=TRUE}
+# the labels use the original ordinal levels
+ordLabels= levels(eduwa$High.Grade)
+
+baseOrdBox2 = baseOrdBox + scale_y_continuous(labels=ordLabels,breaks=1:15)
+baseOrdBox2
+```
+
+Box plots have important statistical information. The beginning and the ending of the box indicates the first (q1) and the third quantile (q75); and the thicker line in the middle represents the median. From the boxplot, we know:
+
+* 25% of the public Schools offer at most 5th GRADE. 
+* 50% of the public Schools offer at most 8th GRADE.
+* 75% of the public Schools offer at most 12th GRADE. Also, 25% of the schools offer 13th grade.
+
+We can find these results with a _detailed_ frequency table; that is, instead of using the command _table_ as we did before, we could try a more advanced function:
+
+```{r advancedTable, warning=FALSE,results='asis', eval=TRUE}
+library(summarytools)
+freq(eduwa$High.Grade,style = 'rmarkdown')
+```
+
+
+[Go to table of contents.](#toc)
+
+________
+
+
+<a id='integerviz'></a>
+
+#### <span style="color:blue"> 3. Visualization for integer values</span>
+
+Integers represent counting. They could be represented with bar plots if their frequency table had few different values. For example, the variable _Reduced.Lunch_ informs how many kids there are in each school that have that lunch for a reduced price.
+
+```{r unique, eval=TRUE}
+# how many unique values
+length(unique(eduwa$Reduced.Lunch))
+```
+
+There are too many different values. Then, although R could produce a frequency table and a plot, we should not do go for the bar plot.
+
+When the frequency table can not be our first step, we need to turn to statistical measures that help us understand behavior of the data:
+
+```{r summary, eval=TRUE}
+# median close to mean?
+# median and mean far from max or min?
+# q1 distance to min is similar ti q3 distance to max?
+# how many missing?
+
+summary(eduwa$Reduced.Lunch)
+```
+
+Let's take care of missing values, by removing them:
+```{r}
+eduwa_Lunch=eduwa[complete.cases(eduwa$Reduced.Lunch),]
+```
+
+The boxplot help us identify clearly the values obtained form summary:
+```{r boxplot_count, eval=TRUE}
+# boxplots do not use frequency tables
+baseInt= ggplot(eduwa_Lunch,aes(y = Reduced.Lunch))  
+baseIntBox = baseInt + geom_boxplot() 
+
+baseIntBox
+```
+
+The bar plot is not good option as it produces a bar for each unique value in the data, counting how many times this value appeared. Now, we have many values, so if we want to use bars, we need to organize the data into _intervals_. The **histogram** is the basic plot when intervals are needed, you can use the basic function:
+
+```{r ggplotHistogram, eval=TRUE}
+baseInt2= ggplot(eduwa_Lunch,aes(x = Reduced.Lunch))  
+baseIntHist= baseInt2 + geom_histogram()
+baseIntHist
+```
+
+
+
+
+
+[Go to table of contents.](#toc)
+
+______
+
+<a id='decimalviz'></a>
+
+
+
+#### <span style="color:blue"> 4. Visualization for values with decimals</span>
+
+A simplistic idea of measurement tells you the times a particular unit is present in the unit of analysis; which allows for the presence of decimal places or even be negative values.
+
+Let's analyze the variable _Student.Teacher.Ratio_, but organized by county:
+
+```{r tapply,  eval=TRUE}
+# tapply(variable,group,functionToApply)
+tapply(eduwa$Student.Teacher.Ratio, eduwa$County, mean)
+
+```
+
+Above, I tried to compute the mean for each county, but the function _mean()_ outputs a missing value (_NA_) as the result when there is one _NA_ in the column. Then we need no missing values in that column:
+
+```{r removeMissing2, eval=TRUE}
+eduwa_ratioST=eduwa[complete.cases(eduwa$Student.Teacher.Ratio),]
+
+meanValuesCounty= eduwa_ratioST  %>%  
+                    group_by(County)  %>%  
+                        summarize('means'=mean(Student.Teacher.Ratio))
+meanValuesCounty
+```
+
+Great!
+
+
+Let's compute some statistics:
+```{r summaryMeans, eval=TRUE}
+summary(meanValuesCounty$means)
+```
+
+```{r boxplot_count, eval=TRUE}
+# boxplots do not use frequency tables
+baseDec= ggplot(meanValuesCounty,aes(y = means))  
+baseDecBox = baseDec + geom_boxplot() 
+
+baseDecBox
+```
+
+
+Now let me plot a histogram of those means:
+
+```{r ggplotHistogramMeans, eval=TRUE}
+baseDec2= ggplot(meanValuesCounty,aes(x = means))  
+baseDecHist= baseDec2 + geom_histogram(bins=7) # bins 7 (default 30)
+baseDecHist
+```
+
+
+[Go to table of contents.](#toc)
+
+______
+
+<a id='improveviz'></a>
+
+
+## <span style="color:blue"> Improving visualization elements</span>
+
+
+* **Working on titles**
+
+Titles and captions are important:
+
+* It can be a *question* to be answered by the plot:
+
+```{r baseDecBox2, eval=TRUE}
+titleText='Do we have counties with less than 15 students per teacher (on average)?'
+sourceText='Source: US Department of Education'
+xaxisText='Average of students-teacher ratio'
+yaxisText='Amount of counties'
+
+baseDecHist2= baseDecHist + labs(title=titleText,
+                               x = xaxisText, 
+                               y = yaxisText,
+                               caption = sourceText)
+
+baseDecHist2
+```
+
+* It can can *guide* the reader to recognise the purpose of your plot:
+
+```{r baseIntHist3, eval=TRUE}
+
+# using \n
+titleText2='Most schools in WA do not have\nstudents in the Reduced Lunch Program'
+sourceText='Source: US Department of Education'
+xaxisText='Students in Reduced Lunch Program'
+yaxisText='Amount of schools'
+
+baseIntHist2= baseIntHist  + labs(title=titleText2,
+                                  x = xaxisText, 
+                                  y = yaxisText,
+                                  caption = sourceText)
+
+# changing position of titles
+
+baseIntHist3= baseIntHist2 + theme(plot.caption = element_text(hjust = 0), 
+                                   plot.title = element_text(hjust = 0.5))
+
+baseIntHist3
+```
+
+
+* It can *suggest* a decision:
+
+```{r barNomProp2, eval=TRUE}
+titleText3='WA needs to fully categorize school locations\n(info from 2018)'
+sourceText='Source: US Department of Education'
+xaxisText='Location of Schools'
+yaxisText='%'
+
+barNomProp2= barNomProp + labs(title=titleText3,
+                                  x = xaxisText, 
+                                  y = yaxisText,
+                                  caption = sourceText)
+
+barNomProp2
+```
+
+
+
+* **Working on position**
+
+Plots like the boxplot may need a different position:
+
+```{r boxflip}
+baseDecBox2=baseDecBox + coord_flip()
+baseDecBox2
+```
+
+* **Working on axes**
+
+The values at the vertical are not needed:
+
+```{r simple}
+baseDecBox3=baseDecBox2 + 
+    theme(axis.text.y = element_blank(), # no text in ticks
+          axis.ticks = element_blank())  # no symbol in ticks
+
+baseDecBox3
+
+```
+
+* Put values where needed:
+
+```{r axes2}
+# vector of the summary statistics with one decimal place
+statVals=round(as.vector(summary(meanValuesCounty$means)),1)
+
+baseDecBox4=baseDecBox3 + 
+            # customize tick values
+            scale_y_continuous(breaks=statVals, 
+                               limits = c(10, 25)) +
+            # change angle of tick values
+            theme(axis.text.x = element_text(angle=45),
+                  panel.grid.minor =   element_blank()) # grid only on ticks
+
+baseDecBox4
+```
+
+* Use actual percent units:
+
+```{r}
+barNomProp2 + scale_y_continuous(labels=percent)
+```
+
+
+* **Adding elements**
+
+* Reference lines
+
+```{r}
+meanV=round(mean(meanValuesCounty$means),2)
+baseDecHist3=baseDecHist2 + geom_vline(xintercept = meanV,
+                            linetype="dotted", 
+                            color = "yellow", 
+                            size=1.5)
+baseDecHist3
+```
+
+* Annotation
+
+
+```{r}
+meanV=round(mean(meanValuesCounty$means),2)
+count_Less15=nrow(meanValuesCounty[meanValuesCounty$means<15,])
+
+baseDecHist4=baseDecHist3+ annotate("text", x = meanV+0.5,y=10,
+                                    angle = 90, 
+                                    label = paste("MEAN",meanV),
+                                    color="yellow") + 
+                           annotate("rect", xmin = 10, xmax = 15, 
+                                    ymin = 0, ymax = 5,
+                                    fill='red',alpha = .2) +
+                           annotate("text", x= 12.5, y = 4,
+                                    label=paste(count_Less15,'counties'))
+
+
+
+
+baseDecHist4
+```
+
+* **Transformation**
+
+```{r}
+Freq=as.data.frame(prop.table(table(eduwa$LocaleType)))
+names(Freq)=c('Type','Percent')
+baseNom2= ggplot(data = Freq, 
+             aes(x=Type,y=Percent)) + geom_point() + geom_segment(aes(y = 0,
+                                   x = Type,
+                                   yend = Percent,
+                                   xend = Type), color = "grey50")
+baseNom2
+```
+
+
+
+
+
+
+
+
+
+We could use our reference line to show gaps or differences. In this case, the **Lollipop** plot may be useful. This one is just a replacement for a bar plot:
+
+```{r lolli_gg, eval=TRUE}
+base = ggplot(tableFreq, aes(x=locale,pct)) 
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = locale, 
+                                   yend = pct, 
+                                   xend = locale), color = "grey50") 
+lolliplot1 + geom_point()
+```
+
+And, if you order the data frame:
+```{r lolli_ord, eval=TRUE}
+tableFreq[order(tableFreq$pct),]
+```
+
+You can get:
+```{r lolli_ord_gg, eval=TRUE}
+
+# reordering DF steps:
+tableFreqO=tableFreq[order(tableFreq$pct),]
+
+
+base = ggplot(tableFreqO, aes(locale,pct)) 
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = locale, 
+                                   yend = pct, 
+                                   xend = locale), color = "gray") 
+lolliplot2 = lolliplot1 + geom_point()
+lolliplot2 + scale_x_discrete(limits=tableFreqO$locale) # key element
+```
+
+And, what about changing the axis values so that we can identify the gaps:
+
+```{r lolli_axis_gg, eval=TRUE}
+# new variable
+tableFreqO$gap=tableFreqO$pct-25
+
+# plot the new variable
+base = ggplot(tableFreqO, aes(locale,gap)) 
+
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = locale, 
+                                   yend = gap, 
+                                   xend = locale), color = "gray") 
+lolliplot2 = lolliplot1 + geom_point()
+lolliplot2 + scale_x_discrete(limits=tableFreqO$locale) # key element
+
+```
+
+Maybe add some color:
+```{r lolli_gg_color, eval=TRUE}
+# a new column for color
+tableFreqO$PositiveGap=ifelse(tableFreqO$gap>0,T,F)
+
+# add new aesthetics 'color'
+base = ggplot(tableFreqO, aes(locale,gap,
+                              color=PositiveGap)) #change
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = locale, 
+                                   yend = gap, 
+                                   xend = locale), color = "gray") 
+lolliplot2 = lolliplot1 + geom_point()
+lolliplot2 + scale_x_discrete(limits=tableFreqO$locale) # key element
+```
+
+Maybe add some extra info:
+```{r lolli_annot_gg, eval=TRUE}
+# a new column for color
+tableFreqO$PositiveGap=ifelse(tableFreqO$gap>0,T,F)
+
+base = ggplot(tableFreqO, aes(locale,gap,color=PositiveGap,
+                              label = round(gap,3))) #  change
+lolliplot1=base + geom_segment(aes(y = 0, 
+                                   x = locale, 
+                                   yend = gap, 
+                                   xend = locale), color = "gray") 
+lolliplot2=lolliplot1 + geom_point() 
+lolliplot3= lolliplot2 + scale_x_discrete(limits=tableFreqO$locale) 
+# annotating and moving the text on the horizontal
+lolliplot3 + geom_text(nudge_x=0.3) 
+
+```
+
+You can avoid the overlaping symbols in the legend by using:
+```{r nudge_gg, eval=TRUE}
+lolliplot3 + geom_text(nudge_x=0.3,show.legend = FALSE) 
+```
+
+<span style="color:red"> Exercise:<br>Complete adding the elements missing in the last plot. </span>
+
+
+
+
+----
+
+* [Go to page beginning](#beginning)
+* [Go to Course schedule](https://ds4ps.org/ddmp-uw-class-spring-2019/schedule/)
+
