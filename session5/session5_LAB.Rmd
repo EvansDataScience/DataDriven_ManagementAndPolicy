@@ -39,5 +39,11 @@ Part 5:
 
 Make an alternative plot for the nominal and the numerical variable. Customize it with the elements of your choice. 
 
+Part 6 (For final project):
+
+1. Download the data you have collected from one source.
+2. Input it to R. 
+3. Summarize what you see. Select one variable and create one plot based on what you have.
+
 * [Go to Course schedule](https://ds4ps.org/ddmp-uw-class-spring-2019/schedule/)
 
