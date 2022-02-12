@@ -241,7 +241,7 @@ We can limit the labels, annotating the ones that represent at least 5% of the c
 
 ```{r, eval=TRUE}
 plot1 + geom_text_repel(aes(label=ifelse(crimeShare>=0.05,
-                                         as.character(num_num$Neighborhood), "")))
+                                         num_num$Neighborhood, "")))
 ```
 
 
@@ -368,9 +368,9 @@ The last heatmap above could be 'ordered' so that column and row positions can g
 ```{r, eval=TRUE}
 # change in REORDER
 base= ggplot(data = safeA, aes(x = reorder(variable, 
-                                           value, median, order=TRUE),
+                                           value, mean, order=TRUE),
                                y =reorder(city,
-                                          value, median, order=TRUE)))
+                                          value, mean, order=TRUE)))
 # THIS IS THE SAME
 base + geom_tile(aes(fill = value)) + 
     scale_fill_distiller(palette = "RdYlGn",direction = 1) +
@@ -771,7 +771,7 @@ str(wazipMap$ZCTA5CE10)
 ```
 
 
-Let's turn _ZCTA5CE10_ into a character, to be in the same type as our map data frame:
+Let's turn _contributor_zip_ into a character, to be in the same type as our map data frame:
 
 ```{r, eval=TRUE}
 WA_zip_contri$contributor_zip=as.character(WA_zip_contri$contributor_zip)
@@ -799,8 +799,8 @@ We will plot the average amounts contributed, which will be organised into 5 qua
 1. Install and load the necessary packages to manage color and divisions:
 
 ```{r, eval=TRUE,warning=FALSE,message=FALSE,results='hide'}
-library(RColorBrewer)
-library(classInt)
+#library(RColorBrewer)
+#library(classInt)
 ```
 
 
